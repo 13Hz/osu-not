@@ -44,7 +44,7 @@ class OsuApi
 
     public function getToken(OauthTokenDTO $oauthTokenDTO): ?OauthTokenResponse
     {
-        $response = $this->post('/oauth/token', (array)$oauthTokenDTO, false);
+        $response = $this->post('/oauth/token', $oauthTokenDTO, false);
         if ($response) {
             return OauthTokenResponse::fromJson($response->getBody()->getContents());
         }

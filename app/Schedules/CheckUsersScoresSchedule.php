@@ -30,7 +30,7 @@ class CheckUsersScoresSchedule
                     $message = $messageBuilder
                         ->addText($lastScore->rank)
                         ->addLink($user->name, "https://osu.ppy.sh/users/$user->id")
-                        ->addText("{$lastScore->beatmapset->artist} - {$lastScore->beatmapset->title} \\[{$lastScore->beatmap->version}]")
+                        ->addText("{$lastScore->beatmapset->artist} - {$lastScore->beatmapset->title} \\[{$lastScore->beatmap->version}\\]")
                         ->addText("{$pp}pp $accuracy% {$lastScore->beatmap->difficulty_rating}✩ $mods")
                         ->getText();
                     foreach ($user->chats()->get() as $chat) {
@@ -38,7 +38,7 @@ class CheckUsersScoresSchedule
                         Telegram::sendMessage([
                             'chat_id' => $chat->id,
                             'text' => $message,
-                            'parse_mode' => 'markdown',
+                            'parse_mode' => 'MarkdownV2',
                             'disable_web_page_preview' => true
                         ]);
                     }

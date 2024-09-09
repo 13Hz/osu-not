@@ -7,7 +7,7 @@ class MessageBuilder
     private string $delimiter;
     private array $data;
 
-    public function __construct(string $delimiter = ' | ')
+    public function __construct(string $delimiter = ' \\| ')
     {
         $this->delimiter = $delimiter;
         $this->data = [];

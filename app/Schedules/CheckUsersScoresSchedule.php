@@ -17,7 +17,7 @@ class CheckUsersScoresSchedule
             $lastScore = $usersService->getUserScores(new GetUserScoresDTO($user->id, 'recent', limit: 1))[0] ?? null;
             if ($lastScore && $lastScore->getHash() != $user->last_score_hash) {
                 //TODO: Шлем сообщение в тг
-                Log::debug('YAAAY', $lastScore);
+                Log::debug('YAAAY', (array)$lastScore);
                 $user->update(['last_score_hash' => $lastScore->getHash()]);
             }
         }

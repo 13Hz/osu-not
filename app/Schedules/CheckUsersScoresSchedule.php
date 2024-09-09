@@ -35,12 +35,17 @@ class CheckUsersScoresSchedule
                         ->getText();
                     foreach ($user->chats()->get() as $chat) {
                         //TODO: Добавить обложку карты + инфу по показателям AR CS OD и тд + ссылку на профиль, карту, скор
-                        Telegram::sendMessage([
-                            'chat_id' => $chat->id,
-                            'text' => $message,
-                            'parse_mode' => 'MarkdownV2',
-                            'disable_web_page_preview' => true
-                        ]);
+                        try {
+                            Telegram::sendMessage([
+                                'chat_id' => $chat->id,
+                                'text' => $message,
+                                'parse_mode' => 'MarkdownV2',
+                                'disable_web_page_preview' => true
+                            ]);
+                        } catch (\Exception) {
+                            Log::error('Ошибка отправки сообщения, текст: ' . $message);
+                            break;
+                        }
                     }
                 }
                 $user->update(['last_score_hash' => $lastScore->getHash()]);

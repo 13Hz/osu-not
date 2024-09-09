@@ -19,6 +19,7 @@ class CheckUsersScoresSchedule
             if ($lastScore && $lastScore->getHash() != $user->last_score_hash) {
                 Log::info("player $user->name submitted new score");
                 if ($lastScore->passed && $lastScore->pp > 0) {
+                    $pp = round($lastScore->pp, 1);
                     $accuracy = round($lastScore->accuracy * 100, 2);
                     $mods = null;
                     if (!empty($lastScore->mods)) {
@@ -28,7 +29,7 @@ class CheckUsersScoresSchedule
                         //TODO: Добавить обложку карты + инфу по показателям AR CS OD и тд + ссылку на профиль, карту, скор
                         Telegram::sendMessage([
                             'chat_id' => $chat->id,
-                            'text' => "$lastScore->rank | $user->name | {$lastScore->beatmapset->artist} - {$lastScore->beatmapset->title} [{$lastScore->beatmap->version}] | {$lastScore->pp}pp $accuracy% {$lastScore->beatmap->difficulty_rating}✩ $mods",
+                            'text' => "$lastScore->rank | $user->name | {$lastScore->beatmapset->artist} - {$lastScore->beatmapset->title} [{$lastScore->beatmap->version}] | {$pp}pp $accuracy% {$lastScore->beatmap->difficulty_rating}✩ $mods",
                         ]);
                     }
                 }

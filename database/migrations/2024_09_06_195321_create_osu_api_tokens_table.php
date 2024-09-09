@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->integer('id')->primary();
-            $table->string('name');
-            $table->string('last_score_hash')->nullable();
+        Schema::create('osu_api_tokens', function (Blueprint $table) {
+            $table->id();
+            $table->text('access_token');
+            $table->text('refresh_token');
+            $table->integer('expires_in');
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('osu_api_tokens');
     }
 };

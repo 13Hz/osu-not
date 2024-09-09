@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Kernel\Api\OsuApi;
 use App\Kernel\DTO\OauthTokenDTO;
+use App\Models\OsuApiToken;
 use Illuminate\Http\Request;
 
 class OauthCallbackController extends Controller
@@ -19,7 +20,13 @@ class OauthCallbackController extends Controller
                 redirect_uri: config('api.callback_uri')
             ));
 
-            dd($result);
+            if ($result) {
+                OsuApiToken::create([
+                    'access_token' => $result->access_token,
+                    'refresh_token' => $result->refresh_token,
+                    'expires_in' => $result->expires_in,
+                ]);
+            }
         }
     }
 }

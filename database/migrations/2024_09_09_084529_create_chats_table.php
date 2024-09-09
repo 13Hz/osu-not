@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('chats', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
+            $table->bigInteger('id')->primary();
             $table->timestamps();
         });
     }

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('chat_user', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('chat_id');
+            $table->bigInteger('chat_id');
             $table->foreign('chat_id')->references('id')->on('chats')->onDelete('cascade');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

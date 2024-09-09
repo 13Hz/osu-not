@@ -31,6 +31,7 @@ class CheckUsersScoresSchedule
                             'chat_id' => $chat->id,
                             'text' => "$lastScore->rank | [$user->name](https://osu.ppy.sh/users/$user->id) | {$lastScore->beatmapset->artist} - {$lastScore->beatmapset->title} [{$lastScore->beatmap->version}] | {$pp}pp $accuracy% {$lastScore->beatmap->difficulty_rating}✩ $mods",
                             'parse_mode' => 'markdown',
+                            'disable_web_page_preview' => true
                         ]);
                     }
                 }

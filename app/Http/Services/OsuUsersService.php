@@ -39,22 +39,39 @@ class OsuUsersService
         return null;
     }
 
-    public function trackUser(string $name): void
+    public function updateLastScore(\App\Models\User $user): bool
     {
-        $osuUser = $this->getUser(new GetUserDTO($name));
-        if ($osuUser && !\App\Models\User::find($osuUser->id)) {
-            $lastScore = $this->getUserScores(new GetUserScoresDTO(
-                $osuUser->id,
-                'recent',
-                limit: 1
-            ))[0] ?? null;
-            if ($lastScore) {
-                \App\Models\User::create([
-                    'id' => $osuUser->id,
-                    'name' => $osuUser->username,
-                    'last_score_hash' => $lastScore->getHash(),
-                ]);
-            }
+        $lastScores = $this->getUserScores(new GetUserScoresDTO(
+            $user->id,
+            'recent',
+            limit: 1
+        ));
+        if (is_array($lastScores)) {
+            $hash = !empty($lastScores[0]) ? $lastScores[0]->getHash() : null;
+
+            return $user->update([
+                'last_score_hash' => $hash
+            ]);
         }
+
+        return false;
+    }
+
+    public function getOrCreateUser(string $name): ?\App\Models\User
+    {
+        $osuUser = $this->getUser(new GetUserDTO("@$name"));
+        if ($osuUser) {
+            $user = \App\Models\User::firstOrCreate(
+                ['id' => $osuUser->id],
+                ['name' => $name]
+            );
+            if ($user) {
+                $this->updateLastScore($user);
+            }
+
+            return $user;
+        }
+
+        return null;
     }
 }

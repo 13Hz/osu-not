@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class User extends Model
+class Chat extends Model
 {
     use HasFactory;
 
@@ -14,12 +14,10 @@ class User extends Model
 
     protected $fillable = [
         'id',
-        'name',
-        'last_score_hash',
     ];
 
-    public function chats(): BelongsToMany
+    public function users(): BelongsToMany
     {
-        return $this->belongsToMany(Chat::class);
+        return $this->belongsToMany(User::class);
     }
 }

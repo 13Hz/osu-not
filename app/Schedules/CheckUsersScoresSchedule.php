@@ -30,7 +30,7 @@ class CheckUsersScoresSchedule
                     $message = $messageBuilder
                         ->addText($lastScore->rank)
                         ->addLink($user->name, "https://osu.ppy.sh/users/$user->id")
-                        ->addText("{$lastScore->beatmapset->artist} - {$lastScore->beatmapset->title} \\[{$lastScore->beatmap->version}\\]")
+                        ->addText("{$lastScore->beatmapset->artist} - {$lastScore->beatmapset->title} [{$lastScore->beatmap->version}]")
                         ->addText("{$pp}pp $accuracy% {$lastScore->beatmap->difficulty_rating}✩ $mods")
                         ->getText();
                     foreach ($user->chats()->get() as $chat) {

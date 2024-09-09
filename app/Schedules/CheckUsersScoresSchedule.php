@@ -39,11 +39,11 @@ class CheckUsersScoresSchedule
                             Telegram::sendMessage([
                                 'chat_id' => $chat->id,
                                 'text' => $message,
-                                'parse_mode' => 'MarkdownV2',
+                                'parse_mode' => 'HTML',
                                 'disable_web_page_preview' => true
                             ]);
-                        } catch (\Exception) {
-                            Log::error('Ошибка отправки сообщения, текст: ' . $message);
+                        } catch (\Exception $ex) {
+                            Log::error('Ошибка отправки сообщения, текст: ' . $message . ' ' . $ex->getMessage());
                             break;
                         }
                     }

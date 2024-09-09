@@ -25,7 +25,7 @@ class MessageBuilder
     public function addLink(string $text, string $url): self
     {
         if (!empty($text) && !empty($url)) {
-            $this->addText("[$text]($url)");
+            $this->addText("<a href='$url'>$text</a>");
         }
 
         return $this;

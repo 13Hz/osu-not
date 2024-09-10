@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Http\Services\OsuTokenService;
 use Illuminate\Console\Command;
 
 class OAuthCommand extends Command
@@ -12,12 +13,7 @@ class OAuthCommand extends Command
 
     public function handle(): int
     {
-        $this->info('https://osu.ppy.sh/oauth/authorize?' . http_build_query([
-            'client_id' => config('api.client_id'),
-            'response_type' => 'code',
-            'scope' => 'public',
-            'redirect_uri' => config('api.callback_uri'),
-        ]));
+        $this->info(OsuTokenService::getOauthLink());
 
         return self::SUCCESS;
     }

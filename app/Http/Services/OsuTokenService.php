@@ -13,6 +13,16 @@ class OsuTokenService
         protected OsuApi $api
     ) {}
 
+    public static function getOauthLink(): string
+    {
+        return 'https://osu.ppy.sh/oauth/authorize?' . http_build_query([
+            'client_id' => config('api.client_id'),
+            'response_type' => 'code',
+            'scope' => 'public',
+            'redirect_uri' => config('api.callback_uri'),
+        ]);
+    }
+
     public function getToken(): ?string
     {
         $lastToken = OsuApiToken::latest('id')->first();

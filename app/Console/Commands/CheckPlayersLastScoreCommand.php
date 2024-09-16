@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\LazyCollection;
 
 class CheckPlayersLastScoreCommand extends Command
@@ -31,7 +32,9 @@ class CheckPlayersLastScoreCommand extends Command
             $batch->add(new CheckPlayerLastScoreJob($collection->toArray()));
         });
 
-        $batch->finally(function () {
+        $batch->catch(function (\Throwable $throwable) {
+            Log::warning('Ошибка выполнения задачи ' . $throwable->getMessage());
+        })->finally(function () {
             Cache::forget('batch_running');
         })->dispatch();
 

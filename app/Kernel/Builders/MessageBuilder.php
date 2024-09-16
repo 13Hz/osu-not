@@ -16,6 +16,7 @@ class MessageBuilder
     public function addText(string $data): self
     {
         if (!empty($data)) {
+            $data = htmlentities($data);
             $this->data[] = $data;
         }
 
@@ -25,7 +26,8 @@ class MessageBuilder
     public function addLink(string $text, string $url): self
     {
         if (!empty($text) && !empty($url)) {
-            $this->addText("<a href='$url'>$text</a>");
+            $text = htmlentities($text);
+            $this->data[] = "<a href='$url'>$text</a>";
         }
 
         return $this;

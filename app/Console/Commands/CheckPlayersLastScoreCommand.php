@@ -31,7 +31,7 @@ class CheckPlayersLastScoreCommand extends Command
             $batch->add(new CheckPlayerLastScoreJob($collection->toArray()));
         });
 
-        $batch->then(function () {
+        $batch->finally(function () {
             Cache::forget('batch_running');
         })->dispatch();
 

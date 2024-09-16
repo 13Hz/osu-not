@@ -2,6 +2,7 @@
 
 namespace App\Kernel\Builders;
 
+use App\Models\File;
 use App\Models\Score;
 use GdImage;
 use Illuminate\Support\Facades\Storage;
@@ -11,9 +12,9 @@ class ScorePreviewBuilder
 {
     private Score $score;
     private GdImage $background;
-    private ?GdImage $avatar;
+    private ?GdImage $avatar = null;
     private GdImage $transparent;
-    private ?GdImage $cover;
+    private ?GdImage $cover = null;
     private string $fontPath;
     private false|int $whiteColor;
 
@@ -42,7 +43,19 @@ class ScorePreviewBuilder
         $this->background = imagecreatefrompng(resource_path('/images/gd/bg.png'));
         $this->transparent = imagecreatefrompng(resource_path('/images/gd/transparent.png'));
         if (!empty($this->score->user->avatar_url)) {
-            $this->avatar = $this->resize(imagecreatefromjpeg($this->score->user->avatar_url), 60, 60);
+            $info = pathinfo($this->score->user->avatar_url);
+            $image = null;
+            switch ($info['extension']) {
+                case 'png':
+                    $image = imagecreatefrompng($this->score->user->avatar_url);
+                break;
+                case 'jpg':
+                    $image = imagecreatefromjpeg($this->score->user->avatar_url);
+                break;
+            }
+            if ($image) {
+                $this->avatar = $this->resize($image, 60, 60);
+            }
         }
         if (!empty($this->score->beatmapset['covers']['cover'])) {
             $this->cover = $this->resize(imagecreatefromjpeg($this->score->beatmapset['covers']['cover']), 1000, 260);
@@ -90,6 +103,10 @@ class ScorePreviewBuilder
 
     private function addNickname(): void
     {
+        if (empty($this->score->user->name)) {
+            return;
+        }
+
         $nickname = $this->score->user->name;
         [$nicknameWidth, $nicknameHeight] = $this->getTextSize($nickname, 18);
         $i = 0;
@@ -126,8 +143,12 @@ class ScorePreviewBuilder
         imagettftext($this->background, 10, 0, 346 - round($accuracyStringWidth / 2), 70, $this->whiteColor, $this->fontPath, $accuracyString);
     }
 
-    public function getPreview(): ?string
+    public function getPreview(): ?File
     {
+        if ($this->score->preview) {
+            return $this->score->preview;
+        }
+
         $this->setAvatar();
         $this->setCover();
         $this->addText();
@@ -135,15 +156,23 @@ class ScorePreviewBuilder
         $this->addRank();
         $this->addScoreInfo();
 
-        $fileName = Str::random();
+        $fileName = Str::random() . '.png';
         $folderName = substr($fileName, 0, 3);
-        $path = "/$folderName/$fileName.png";
+        $path = "/$folderName/$fileName";
         if (!Storage::disk('public')->exists($folderName)) {
             Storage::disk('public')->makeDirectory($folderName);
         }
         $filePath = Storage::disk('public')->path($path);
         if (imagepng($this->background, $filePath)) {
-            return Storage::disk('public')->url($path);
+            $preview = File::create([
+                'name' => $fileName,
+                'path' => $path,
+                'extension' => 'png'
+            ]);
+            if ($preview) {
+                $this->score->preview()->associate($preview)->save();
+                return $preview;
+            }
         }
 
         return null;

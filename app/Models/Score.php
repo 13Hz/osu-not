@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Score extends Model
 {
@@ -18,7 +18,6 @@ class Score extends Model
         'beatmap' => 'json',
         'beatmapset' => 'json',
     ];
-
     protected $fillable = [
         'accuracy',
         'user_id',
@@ -38,8 +37,13 @@ class Score extends Model
         'beatmapset',
     ];
 
-    public function user(): HasOne
+    public function user(): BelongsTo
     {
-        return $this->hasOne(User::class, 'last_score_id', 'id');
+        return $this->belongsTo(User::class);
+    }
+
+    public function preview(): BelongsTo
+    {
+        return $this->belongsTo(File::class, 'preview_id', 'id');
     }
 }

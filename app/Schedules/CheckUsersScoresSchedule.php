@@ -6,6 +6,7 @@ use App\Http\Services\OsuUsersService;
 use App\Http\Services\ScoresService;
 use App\Kernel\Builders\MessageBuilder;
 use App\Kernel\DTO\GetUserScoresDTO;
+use App\Models\Message;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Telegram\Bot\Laravel\Facades\Telegram;
@@ -26,7 +27,7 @@ class CheckUsersScoresSchedule
                     $user->update(['avatar_url' => $lastScoreResponse['user']['avatar_url']]);
                 }
                 $score = $scoresService->firstOrCreateFromResponse($lastScoreResponse);
-                if ($score && $score->id != $user->last_score_id) {
+                if ($score && $score->id != $user->last_score_id && $score->mode == 'osu') {
                     Log::info("player $user->name submitted new score");
                     if ($score->passed && $score->pp > 0) {
                         $messageBuilder = new MessageBuilder();
@@ -36,7 +37,7 @@ class CheckUsersScoresSchedule
                         if (!empty($score->mods)) {
                             $mods = '+' . implode('', $score->mods);
                         }
-                        $message = $messageBuilder
+                        $text = $messageBuilder
                             ->addText($score->rank)
                             ->addLink($user->name, "https://osu.ppy.sh/users/$user->id")
                             ->addLink("{$score->beatmapset['artist']} - {$score->beatmapset['title']} [{$score->beatmap['version']}]", $score->beatmap['url'])
@@ -45,12 +46,20 @@ class CheckUsersScoresSchedule
                         foreach ($user->chats()->get() as $chat) {
                             //TODO: Добавить обложку карты + инфу по показателям AR CS OD и тд + ссылку на профиль, карту, скор
                             try {
-                                Telegram::sendMessage([
+                                $message = Telegram::sendMessage([
                                     'chat_id' => $chat->id,
-                                    'text' => $message,
+                                    'text' => $text,
                                     'parse_mode' => 'HTML',
                                     'disable_web_page_preview' => true
                                 ]);
+                                if ($message) {
+                                    Message::create([
+                                        'score_id' => $score->id,
+                                        'id' => $message->messageId,
+                                        'message' => $text,
+                                        'chat_id' => $chat->id,
+                                    ]);
+                                }
                             } catch (\Exception $ex) {
                                 Log::error('Ошибка отправки сообщения, текст: ' . $message . ' ' . $ex->getMessage());
                                 break;

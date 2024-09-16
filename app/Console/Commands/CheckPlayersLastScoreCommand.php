@@ -4,11 +4,13 @@ namespace App\Console\Commands;
 
 use App\Jobs\CheckPlayerLastScoreJob;
 use App\Models\User;
+use Illuminate\Bus\Batch;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\LazyCollection;
+use Throwable;
 
 class CheckPlayersLastScoreCommand extends Command
 {
@@ -32,7 +34,7 @@ class CheckPlayersLastScoreCommand extends Command
             $batch->add(new CheckPlayerLastScoreJob($collection->toArray()));
         });
 
-        $batch->catch(function (\Throwable $throwable) {
+        $batch->catch(function (Batch $batch, Throwable $throwable) {
             Log::warning('Ошибка выполнения задачи ' . $throwable->getMessage());
         })->finally(function () {
             Cache::forget('batch_running');

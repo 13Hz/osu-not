@@ -63,7 +63,10 @@ class OsuUsersService
         if ($osuUser) {
             $user = \App\Models\User::firstOrCreate(
                 ['id' => $osuUser->id],
-                ['name' => $name]
+                [
+                    'name' => $name,
+                    'avatar_url' => $osuUser->avatar_url,
+                ]
             );
             if ($user) {
                 $this->updateLastScore($user);

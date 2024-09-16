@@ -39,8 +39,8 @@ class CheckUsersScoresSchedule
                         $message = $messageBuilder
                             ->addText($score->rank)
                             ->addLink($user->name, "https://osu.ppy.sh/users/$user->id")
-                            ->addText("{$score->beatmapset['artist']} - {$score->beatmapset['title']} [{$score->beatmap['version']}]")
-                            ->addText("{$pp}pp $accuracy% {$score->beatmap['difficulty_rating']}✩ $mods")
+                            ->addLink("{$score->beatmapset['artist']} - {$score->beatmapset['title']} [{$score->beatmap['version']}]", $score->beatmap['url'])
+                            ->addText("{$pp}pp $accuracy% {$score->beatmap['difficulty_rating']}★ $mods")
                             ->getText();
                         foreach ($user->chats()->get() as $chat) {
                             //TODO: Добавить обложку карты + инфу по показателям AR CS OD и тд + ссылку на профиль, карту, скор

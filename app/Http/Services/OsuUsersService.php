@@ -5,7 +5,6 @@ namespace App\Http\Services;
 use App\Kernel\Api\OsuApi;
 use App\Kernel\DTO\GetUserDTO;
 use App\Kernel\DTO\GetUserScoresDTO;
-use App\Kernel\Responses\Score;
 use App\Kernel\Responses\User;
 
 class OsuUsersService
@@ -27,7 +26,7 @@ class OsuUsersService
 
     /**
      * @param GetUserScoresDTO $getUserScoresDTO
-     * @return Score[]|null
+     * @return array|null
      */
     public function getUserScores(GetUserScoresDTO $getUserScoresDTO): ?array
     {
@@ -41,17 +40,18 @@ class OsuUsersService
 
     public function updateLastScore(\App\Models\User $user): bool
     {
-        $lastScores = $this->getUserScores(new GetUserScoresDTO(
+        $lastScore = $this->getUserScores(new GetUserScoresDTO(
             $user->id,
             'recent',
             limit: 1
-        ));
-        if (is_array($lastScores)) {
-            $hash = !empty($lastScores[0]) ? $lastScores[0]->getHash() : null;
+        ))[0] ?? null;
+        if ($lastScore) {
+            $scoresService = new ScoresService();
+            $score = $scoresService->firstOrCreateFromResponse($lastScore);
 
-            return $user->update([
-                'last_score_hash' => $hash
-            ]);
+            if ($score) {
+                return $user->lastScore()->associate($score)->save();
+            }
         }
 
         return false;

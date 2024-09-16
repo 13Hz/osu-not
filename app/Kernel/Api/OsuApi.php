@@ -6,8 +6,6 @@ use App\Kernel\DTO\GetUserDTO;
 use App\Kernel\DTO\GetUserScoresDTO;
 use App\Kernel\DTO\OauthTokenDTO;
 use App\Kernel\DTO\RefreshTokenDTO;
-use App\Kernel\Responses\GetUserResponse;
-use App\Kernel\Responses\Score;
 use App\Kernel\Responses\Token;
 use App\Kernel\Responses\User;
 use GuzzleHttp\Client;
@@ -103,7 +101,7 @@ class OsuApi
     /**
      * @param GetUserScoresDTO $getUserScoresDTO
      * @param string $token
-     * @return Score[]|null
+     * @return array|null
      */
     public function getUserScores(GetUserScoresDTO $getUserScoresDTO, string $token): ?array
     {
@@ -113,12 +111,7 @@ class OsuApi
             headers: ['Authorization' => 'Bearer ' . $token]
         );
         if ($response) {
-            $array = json_decode($response->getBody()->getContents(), true);
-            $scores = [];
-            foreach ($array as $score) {
-                $scores[] = new Score($score);
-            }
-            return $scores;
+            return json_decode($response->getBody()->getContents(), true);
         }
 
         return null;

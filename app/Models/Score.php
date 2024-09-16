@@ -23,7 +23,6 @@ class Score extends Model
         'accuracy',
         'user_id',
         'created_at',
-        'hash',
         'id',
         'max_combo',
         'mode',

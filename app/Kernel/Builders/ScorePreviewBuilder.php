@@ -49,6 +49,7 @@ class ScorePreviewBuilder
                 case 'png':
                     $image = imagecreatefrompng($this->score->user->avatar_url);
                 break;
+                case 'jpeg':
                 case 'jpg':
                     $image = imagecreatefromjpeg($this->score->user->avatar_url);
                 break;

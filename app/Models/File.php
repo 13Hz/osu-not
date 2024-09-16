@@ -30,4 +30,9 @@ class File extends Model
     {
         return Storage::disk('public')->url($this->path);
     }
+
+    public function getAbsolutePath(): string
+    {
+        return Storage::disk('public')->path($this->path);
+    }
 }

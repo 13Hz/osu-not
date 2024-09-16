@@ -10,7 +10,7 @@ class ScoresService
 {
     public function firstOrCreateFromResponse(array $scoreResponse): ?Score
     {
-        if (empty($scoreResponse)) {
+        if (empty($scoreResponse) || !$scoreResponse['id']) {
             return null;
         }
 

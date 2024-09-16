@@ -100,7 +100,7 @@ class CheckPlayerLastScoreJob implements ShouldQueue
                                     ]);
                                 }
                             } catch (\Exception $ex) {
-                                Log::error('Ошибка отправки сообщения, текст: ' . $message . ' ' . $ex->getMessage());
+                                Log::error('Ошибка отправки сообщения, текст: ' . $text . ' ' . $ex->getMessage());
                                 break;
                             }
                         }

@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use App\Http\Services\ChatsService;
 use App\Http\Services\OsuUsersService;
+use App\Models\User;
 use Telegram\Bot\Commands\Command;
 
 class AddCommand extends Command
@@ -19,6 +20,16 @@ class AddCommand extends Command
 
     public function handle()
     {
+        if (config('api.players_limit_enabled')) {
+            $usersCount = User::count();
+            if ($usersCount >= config('api.players_limit')) {
+                $this->replyWithMessage([
+                    'text' => 'Бот уже обрабатывает максимальное количество пользователей, пожалуйста, свяжитесь с администратором'
+                ]);
+                return;
+            }
+        }
+
         $name = $this->argument('username');
         $chatId = $this->getUpdate()->getChat()->get('id') ?? null;
         if ($name && $chatId) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Schedules;
+namespace App\Jobs;
 
 use App\Http\Services\OsuUsersService;
 use App\Http\Services\ScoresService;
@@ -8,17 +8,39 @@ use App\Kernel\Builders\MessageBuilder;
 use App\Kernel\DTO\GetUserScoresDTO;
 use App\Models\Message;
 use App\Models\User;
+use Illuminate\Bus\Batchable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
-class CheckUsersScoresSchedule
+class CheckPlayerLastScoreJob implements ShouldQueue
 {
-    public function __invoke(OsuUsersService $usersService, ScoresService $scoresService)
+    use Queueable;
+    use Batchable;
+
+    private array $userIds;
+
+    /**
+     * Create a new job instance.
+     */
+    public function __construct(array $usersIds)
     {
-        //TODO: Вынести в очередь
-        $users = User::all();
+        $this->userIds = $usersIds;
+    }
+
+    /**
+     * Execute the job.
+     */
+    public function handle(OsuUsersService $osuUsersService, ScoresService $scoresService): void
+    {
+        if (empty($this->userIds)) {
+            return;
+        }
+
+        $users = User::find($this->userIds);
         foreach ($users as $user) {
-            $lastScoreResponse = $usersService->getUserScores(new GetUserScoresDTO($user->id, 'recent', limit: 1))[0] ?? null;
+            $lastScoreResponse = $osuUsersService->getUserScores(new GetUserScoresDTO($user->id, 'recent', limit: 1))[0] ?? null;
             if ($lastScoreResponse) {
                 if ($lastScoreResponse['user']['username'] != $user->name) {
                     $user->update(['name' => $lastScoreResponse['user']['username']]);

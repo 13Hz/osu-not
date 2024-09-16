@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Schedule;
-use \App\Schedules\CheckUsersScoresSchedule;
+use Spatie\ShortSchedule\Facades\ShortSchedule;
 
-Schedule::call(new CheckUsersScoresSchedule)->everyTenSeconds();
+ShortSchedule::command('app:check-players-last-score')->everySeconds(config('api.players_check_delay'))->withoutOverlapping();

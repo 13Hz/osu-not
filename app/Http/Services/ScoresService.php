@@ -24,15 +24,15 @@ class ScoresService
                     'accuracy' => $scoreResponse['accuracy'],
                     'max_combo' => $scoreResponse['max_combo'],
                     'mode' => $scoreResponse['mode'],
-                    'mods' => json_encode($scoreResponse['mods']),
+                    'mods' => $scoreResponse['mods'],
                     'passed' => $scoreResponse['passed'],
                     'perfect' => $scoreResponse['perfect'],
                     'pp' => $scoreResponse['pp'],
                     'rank' => $scoreResponse['rank'],
                     'score' => $scoreResponse['score'],
-                    'statistics' => json_encode($scoreResponse['statistics']),
-                    'beatmap' => json_encode($scoreResponse['beatmap']),
-                    'beatmapset' => json_encode($scoreResponse['beatmapset']),
+                    'statistics' => $scoreResponse['statistics'],
+                    'beatmap' => $scoreResponse['beatmap'],
+                    'beatmapset' => $scoreResponse['beatmapset'],
                     'created_at' => Carbon::create($scoreResponse['created_at'])
                 ]
             );

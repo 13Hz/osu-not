@@ -38,7 +38,8 @@ return [
             'allowed_updates' => null,
             'commands' => [
                 \App\Commands\StartCommand::class,
-                \App\Commands\AddCommand::class
+                \App\Commands\AddCommand::class,
+                \App\Commands\PlayersCommand::class
             ],
         ],
 

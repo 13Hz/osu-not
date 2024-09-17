@@ -14,6 +14,7 @@ class ScorePreviewBuilder
     private GdImage $background;
     private ?GdImage $avatar = null;
     private GdImage $transparent;
+    private GdImage $diff;
     private ?GdImage $cover = null;
     private string $fontPath;
     private false|int $whiteColor;
@@ -42,6 +43,7 @@ class ScorePreviewBuilder
     {
         $this->background = imagecreatefrompng(resource_path('/images/gd/bg.png'));
         $this->transparent = imagecreatefrompng(resource_path('/images/gd/transparent.png'));
+        $this->diff = imagecreatefrompng(resource_path('/images/gd/diff.png'));
         if (!empty($this->score->user->avatar_url)) {
             $info = pathinfo($this->score->user->avatar_url);
             $image = null;
@@ -73,7 +75,7 @@ class ScorePreviewBuilder
     private function setCover(): void
     {
         if ($this->cover) {
-            imagecopy($this->background, $this->cover, 0, 80, 0, 0, 1000, 120);
+            imagecopy($this->background, $this->cover, 0, 80, 0, 0, 1000, 170);
             imagealphablending($this->background, true);
             imagesavealpha($this->background, true);
             imagealphablending($this->transparent, true);
@@ -99,7 +101,7 @@ class ScorePreviewBuilder
     {
         $mapName = "{$this->score->beatmapset['artist']} - {$this->score->beatmapset['title']} [{$this->score->beatmap['version']}]";
         [$mapNameWidth, $mapNameHeight] = $this->getTextSize($mapName, 22);
-        imagettftext($this->background, 22, 0, round(1000 / 2) - round($mapNameWidth / 2), 80 + 60 + round($mapNameHeight / 2), $this->whiteColor, $this->fontPath, $mapName);
+        imagettftext($this->background, 22, 0, round(1000 / 2) - round($mapNameWidth / 2), 80 + (160 / 2) + round($mapNameHeight / 2), $this->whiteColor, $this->fontPath, $mapName);
     }
 
     private function addNickname(): void
@@ -129,6 +131,13 @@ class ScorePreviewBuilder
         }
     }
 
+    private function addDiff(): void
+    {
+        $difficulty = round($this->score->beatmap['difficulty_rating'], 2);
+        imagecopy($this->background, $this->diff, 472, 67, 0, 0, 60, 25);
+        imagettftext($this->background, 10, 0, 495, 85, $this->whiteColor, $this->fontPath, $difficulty);
+    }
+
     private function addScoreInfo(): void
     {
         $ppString = round($this->score->pp, 2) . 'pp';
@@ -156,6 +165,7 @@ class ScorePreviewBuilder
         $this->addNickname();
         $this->addRank();
         $this->addScoreInfo();
+        $this->addDiff();
 
         $fileName = Str::random() . '.png';
         $folderName = substr($fileName, 0, 3);

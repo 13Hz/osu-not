@@ -12,7 +12,8 @@ class PlayersCommand extends Command
 
     public function __construct(
         protected KeyboardBuilder $keyboardBuilder
-    ) {}
+    ) {
+    }
 
     public function handle()
     {

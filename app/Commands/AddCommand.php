@@ -16,7 +16,8 @@ class AddCommand extends Command
     public function __construct(
         protected OsuUsersService $osuUsersService,
         protected ChatsService $chatsService,
-    ) {}
+    ) {
+    }
 
     public function handle()
     {

@@ -12,7 +12,8 @@ class OsuUsersService
     public function __construct(
         protected OsuApi $api,
         protected OsuTokenService $tokenService,
-    ) {}
+    ) {
+    }
 
     public function getUser(GetUserDTO $getUserDTO): ?User
     {

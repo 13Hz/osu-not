@@ -2,7 +2,7 @@
 
 namespace App\Http\Services;
 
-use \App\Models\Score;
+use App\Models\Score;
 use App\Models\User;
 use Carbon\Carbon;
 

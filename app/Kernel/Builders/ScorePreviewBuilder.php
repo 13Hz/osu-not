@@ -50,11 +50,11 @@ class ScorePreviewBuilder
             switch ($info['extension']) {
                 case 'png':
                     $image = imagecreatefrompng($this->score->user->avatar_url);
-                break;
+                    break;
                 case 'jpeg':
                 case 'jpg':
                     $image = imagecreatefromjpeg($this->score->user->avatar_url);
-                break;
+                    break;
             }
             if ($image) {
                 $this->avatar = $this->resize($image, 60, 60);

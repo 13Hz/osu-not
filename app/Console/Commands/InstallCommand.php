@@ -18,8 +18,7 @@ class InstallCommand extends Command
         private readonly LoggerInterface $logger,
         private readonly DotenvEditor    $dotenvEditor,
         private readonly Artisan         $artisan
-    )
-    {
+    ) {
         parent::__construct();
     }
 

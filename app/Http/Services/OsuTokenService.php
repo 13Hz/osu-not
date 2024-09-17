@@ -11,7 +11,8 @@ class OsuTokenService
 {
     public function __construct(
         protected OsuApi $api
-    ) {}
+    ) {
+    }
 
     public static function getOauthLink(): string
     {

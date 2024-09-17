@@ -12,7 +12,8 @@ class StartCommand extends Command
 
     public function __construct(
         protected ChatsService $chatsService
-    ) {}
+    ) {
+    }
 
     public function handle()
     {

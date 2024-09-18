@@ -167,6 +167,25 @@ class ScorePreviewBuilder
         $this->setCenterText($accuracyString, $this->background, 275, 70, $this->whiteColor, 10);
     }
 
+    private function addStatistics(): void
+    {
+        $combo = "Max combo: {$this->score->max_combo}";
+        $this->setCenterText($combo, $this->background, 420,18, $this->whiteColor, 10);
+
+        $this->setCenterText($this->score->statistics['count_100'], $this->background, 378.5,58, $this->whiteColor, 8);
+        $this->setCenterText($this->score->statistics['count_50'], $this->background, 420.5,58, $this->whiteColor, 8);
+        $this->setCenterText($this->score->statistics['count_miss'], $this->background, 462.5,58, $this->whiteColor, 8);
+    }
+
+    private function addMods(): void
+    {
+        if (!empty($this->score->mods)) {
+            $mods = '+' . implode('', $this->score->mods);
+            [$modsWidth, $modsHeight] = $this->getTextSize($mods, 18);
+            imagettftext($this->background, 18, 0, 750 - 20 - $modsWidth, 80 / 2 + $modsHeight / 2, $this->whiteColor, $this->fontPath, $mods);
+        }
+    }
+
     public function getPreview(): ?File
     {
         if ($this->score->preview) {
@@ -180,6 +199,8 @@ class ScorePreviewBuilder
         $this->addScoreInfo();
         $this->addDiff();
         $this->mapInfo();
+        $this->addStatistics();
+        $this->addMods();
 
         $fileName = Str::random() . '.png';
         $folderName = substr($fileName, 0, 3);

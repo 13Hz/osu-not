@@ -31,6 +31,8 @@ class OsuApi
 
     private function post(string $path, mixed $data, array $headers = [], bool $includeApiPath = true): ?ResponseInterface
     {
+        Logger::increment('osu-not.api.requests', 'post');
+
         try {
             $url = $includeApiPath ? self::BASE_URL . self::API_PATH . $path : self::BASE_URL . $path;
             $response = $this->getClient()->post($url, [
@@ -43,8 +45,6 @@ class OsuApi
             Log::warning("[$path] неуспешный статус");
         } catch (GuzzleException $e) {
             Log::warning("[$path] ошибка: " . $e->getMessage());
-        } finally {
-            Logger::increment('osu-not.api.requests', 'post');
         }
 
         return null;
@@ -52,6 +52,8 @@ class OsuApi
 
     private function get(string $path, mixed $data = null, array $headers = [], bool $includeApiPath = true): ?ResponseInterface
     {
+        Logger::increment('osu-not.api.requests', 'get');
+
         try {
             $url = $includeApiPath ? self::BASE_URL . self::API_PATH . $path : self::BASE_URL . $path;
             $response = $this->getClient()->get($url, [
@@ -64,8 +66,6 @@ class OsuApi
             Log::warning("[$path] неуспешный статус");
         } catch (GuzzleException $e) {
             Log::warning("[$path] ошибка: " . $e->getMessage());
-        } finally {
-            Logger::increment('osu-not.api.requests', 'get');
         }
 
         return null;

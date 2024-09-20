@@ -6,7 +6,7 @@ use DataDog\DogStatsd;
 
 class Logger
 {
-    private static DogStatsd $dogStatsd;
+    private static ?DogStatsd $dogStatsd = null;
 
     private static function getDogStatsdInstance(): DogStatsd
     {

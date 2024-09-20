@@ -6,6 +6,7 @@ use App\Kernel\DTO\GetUserDTO;
 use App\Kernel\DTO\GetUserScoresDTO;
 use App\Kernel\DTO\OauthTokenDTO;
 use App\Kernel\DTO\RefreshTokenDTO;
+use App\Kernel\Helpers\Logger;
 use App\Kernel\Responses\Token;
 use App\Kernel\Responses\User;
 use GuzzleHttp\Client;
@@ -42,6 +43,8 @@ class OsuApi
             Log::warning("[$path] неуспешный статус");
         } catch (GuzzleException $e) {
             Log::warning("[$path] ошибка: " . $e->getMessage());
+        } finally {
+            Logger::increment('osu-not.api.requests', 'post');
         }
 
         return null;
@@ -61,6 +64,8 @@ class OsuApi
             Log::warning("[$path] неуспешный статус");
         } catch (GuzzleException $e) {
             Log::warning("[$path] ошибка: " . $e->getMessage());
+        } finally {
+            Logger::increment('osu-not.api.requests', 'get');
         }
 
         return null;

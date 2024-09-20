@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3d61715e859792a1435ea21a113f0b74",
+    "content-hash": "950179d5c70b93af7ecdc77c5d7e621c",
     "packages": [
         {
             "name": "brick/math",
@@ -134,6 +134,70 @@
                 }
             ],
             "time": "2024-02-09T16:56:22+00:00"
+        },
+        {
+            "name": "datadog/php-datadogstatsd",
+            "version": "1.6.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DataDog/php-datadogstatsd.git",
+                "reference": "c35c850210302156ced856f159b250e71b26ae33"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DataDog/php-datadogstatsd/zipball/c35c850210302156ced856f159b250e71b26ae33",
+                "reference": "c35c850210302156ced856f159b250e71b26ae33",
+                "shasum": ""
+            },
+            "require": {
+                "ext-sockets": "*",
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "squizlabs/php_codesniffer": "^3.3",
+                "yoast/phpunit-polyfills": "^1.0.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "DataDog\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alex Corley",
+                    "email": "anthroprose@gmail.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Datadog",
+                    "email": "dev@datadoghq.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "An extremely simple PHP datadogstatsd client",
+            "homepage": "https://www.datadoghq.com/",
+            "keywords": [
+                "DataDog",
+                "check",
+                "error-reporting",
+                "health",
+                "logging",
+                "monitoring",
+                "statsd"
+            ],
+            "support": {
+                "chat": "https://chat.datadoghq.com/",
+                "email": "package@datadoghq.com",
+                "irc": "irc://irc.freenode.net/datadog",
+                "issues": "https://github.com/DataDog/php-datadogstatsd/issues",
+                "source": "https://github.com/DataDog/php-datadogstatsd"
+            },
+            "time": "2024-07-16T16:49:36+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -8297,7 +8361,8 @@
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2",
-        "ext-gd": "*"
+        "ext-gd": "*",
+        "ext-sockets": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.6.0"

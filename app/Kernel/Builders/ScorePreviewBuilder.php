@@ -170,11 +170,11 @@ class ScorePreviewBuilder
     private function addStatistics(): void
     {
         $combo = "Max combo: {$this->score->max_combo}";
-        $this->setCenterText($combo, $this->background, 420,18, $this->whiteColor, 10);
+        $this->setCenterText($combo, $this->background, 420, 18, $this->whiteColor, 10);
 
-        $this->setCenterText($this->score->statistics['count_100'], $this->background, 378.5,58, $this->whiteColor, 8);
-        $this->setCenterText($this->score->statistics['count_50'], $this->background, 420.5,58, $this->whiteColor, 8);
-        $this->setCenterText($this->score->statistics['count_miss'], $this->background, 462.5,58, $this->whiteColor, 8);
+        $this->setCenterText($this->score->statistics['count_100'], $this->background, 378.5, 58, $this->whiteColor, 8);
+        $this->setCenterText($this->score->statistics['count_50'], $this->background, 420.5, 58, $this->whiteColor, 8);
+        $this->setCenterText($this->score->statistics['count_miss'], $this->background, 462.5, 58, $this->whiteColor, 8);
     }
 
     private function addMods(): void

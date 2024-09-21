@@ -18,7 +18,7 @@ class CheckPlayersLastScoreCommand extends Command
 
     protected $description = 'Команда для создания очереди для проверки пользователей на наличие новых результатов';
 
-    private const CHUNK_SIZE = 1;
+    private const CHUNK_SIZE = 5;
 
     public function handle()
     {

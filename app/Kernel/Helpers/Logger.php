@@ -29,4 +29,9 @@ class Logger
     {
         self::getDogStatsdInstance()->set($metric, value: $value, tags: $tags);
     }
+
+    public static function gauge(string $metric, float $value, array|string $tags = null): void
+    {
+        self::getDogStatsdInstance()->gauge($metric, value: $value, tags: $tags);
+    }
 }

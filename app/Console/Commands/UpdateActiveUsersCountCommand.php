@@ -14,6 +14,6 @@ class UpdateActiveUsersCountCommand extends Command
 
     public function handle()
     {
-        Logger::set('osu-not.api.users', User::all()->count());
+        Logger::gauge('osu-not.api.users', User::all()->count());
     }
 }

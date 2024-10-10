@@ -24,4 +24,9 @@ class Logger
     {
         self::getDogStatsdInstance()->increment($metric, tags: $tags, value: 10);
     }
+
+    public static function set(string $metric, float $value, array|string $tags = null): void
+    {
+        self::getDogStatsdInstance()->set($metric, value: $value, tags: $tags);
+    }
 }

@@ -135,7 +135,7 @@ class InstallCommand extends Command
     private function setWebhook(): void
     {
         $success = false;
-        $this->components->task('Устанавливаю вебхук', function() use (&$success) {
+        $this->components->task('Устанавливаю вебхук', function () use (&$success) {
             try {
                 $success = Telegram::setWebhook([
                     'url' => url('/webhook'),

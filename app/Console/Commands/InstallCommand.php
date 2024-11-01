@@ -127,7 +127,7 @@ class InstallCommand extends Command
 
     private function getOauthTokenLink(): void
     {
-        $this->components->task('Обновляю конфигурацию', function() {
+        $this->components->task('Обновляю конфигурацию', function () {
             $this->artisan->call('config:clear');
             $this->artisan->call('config:cache');
         });

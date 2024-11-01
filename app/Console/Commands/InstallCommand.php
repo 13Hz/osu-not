@@ -3,10 +3,12 @@
 namespace App\Console\Commands;
 
 use App\Http\Services\OsuTokenService;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Kernel as Artisan;
 use Jackiedo\DotenvEditor\DotenvEditor;
 use Psr\Log\LoggerInterface;
+use Telegram\Bot\Laravel\Facades\Telegram;
 
 class InstallCommand extends Command
 {
@@ -30,8 +32,9 @@ class InstallCommand extends Command
             $this->setupDatabase();
             $this->migrateDatabase();
             $this->configureApp();
+            $this->setWebhook();
             $this->getOauthTokenLink();
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $this->logger->error($ex);
 
             return self::FAILURE;
@@ -123,14 +126,35 @@ class InstallCommand extends Command
             'OSU_API_CLIENT_SECRET' => $osuApiClientSecret,
         ]);
         $this->dotenvEditor->save();
-    }
-
-    private function getOauthTokenLink(): void
-    {
         $this->components->task('Обновляю конфигурацию', function () {
             $this->artisan->call('config:clear');
             $this->artisan->call('config:cache');
         });
+    }
+
+    private function setWebhook(): void
+    {
+        $success = false;
+        $this->components->task('Устанавливаю вебхук', function() use (&$success) {
+            try {
+                $success = Telegram::setWebhook([
+                    'url' => url('/webhook'),
+                    'secret_token' => config('telegram.webhook.token')
+                ]);
+            } catch (Exception $ex) {
+                $this->logger->error($ex);
+            }
+
+            return $success;
+        });
+
+        if (!$success) {
+            $this->error('Ошибка установки вебхука, пожалуйста проверьте настройки телеграм бота и доступность приложения по указанной ссылке, после чего выполните php artisan webhook:set');
+        }
+    }
+
+    private function getOauthTokenLink(): void
+    {
         $this->alert(OsuTokenService::getOauthLink());
     }
 }

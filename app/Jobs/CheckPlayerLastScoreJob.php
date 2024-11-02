@@ -74,12 +74,15 @@ class CheckPlayerLastScoreJob implements ShouldQueue
                                     'disable_web_page_preview' => true
                                 ]);
                                 if ($message) {
-                                    Message::create([
+                                    $telegramMessage = Message::create([
                                         'score_id' => $score->id,
                                         'id' => $message->messageId,
                                         'message' => $text,
                                         'chat_id' => $chat->id,
                                     ]);
+                                    if ($telegramMessage) {
+                                        GenerateScorePreview::dispatch($score->id);
+                                    }
                                 }
                             } catch (\Exception $ex) {
                                 Log::error('Ошибка отправки сообщения, текст: ' . $text . ' ' . $ex->getMessage());

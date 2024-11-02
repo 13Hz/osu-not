@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Commands;
+namespace App\Telegram\Commands;
 
 use App\Kernel\Builders\KeyboardBuilder;
 use Telegram\Bot\Commands\Command;

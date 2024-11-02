@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Http\Services\MessagesService;
 use App\Http\Services\OsuUsersService;
 use App\Http\Services\ScoresService;
-use App\Kernel\Builders\MessageBuilder;
 use App\Kernel\DTO\GetUserScoresDTO;
 use App\Models\Message;
 use App\Models\User;
@@ -12,7 +12,6 @@ use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
-use Telegram\Bot\Laravel\Facades\Telegram;
 
 class CheckPlayerLastScoreJob implements ShouldQueue
 {
@@ -32,7 +31,7 @@ class CheckPlayerLastScoreJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(OsuUsersService $osuUsersService, ScoresService $scoresService): void
+    public function handle(OsuUsersService $osuUsersService, ScoresService $scoresService, MessagesService $messagesService): void
     {
         if (empty($this->userIds)) {
             return;
@@ -52,41 +51,19 @@ class CheckPlayerLastScoreJob implements ShouldQueue
                 if ($score && $score->id != $user->last_score_id && $score->mode == 'osu') {
                     Log::info('Пользователь {userName} поставил новый результат', ['userName' => $user->name]);
                     if ($score->passed && $score->pp > 0) {
-                        $messageBuilder = new MessageBuilder();
-                        $pp = round($score->pp, 1);
-                        $accuracy = round($score->accuracy * 100, 2);
-                        $mods = null;
-                        if (!empty($score->mods)) {
-                            $mods = '+' . implode('', $score->mods);
-                        }
-                        $text = $messageBuilder
-                            ->addText($score->rank)
-                            ->addLink($user->name, "https://osu.ppy.sh/users/$user->id")
-                            ->addLink("{$score->beatmapset['artist']} - {$score->beatmapset['title']} [{$score->beatmap['version']}]", $score->beatmap['url'])
-                            ->addText("{$pp}pp $accuracy% {$score->beatmap['difficulty_rating']}★ $mods")
-                            ->getText();
+                        $text = $scoresService->getScoreStringInfo($score);
                         foreach ($user->chats()->get() as $chat) {
-                            try {
-                                $message = Telegram::sendMessage([
+                            $message = $messagesService->sendMessage($chat->id, $text);
+                            if ($message) {
+                                $telegramMessage = Message::create([
+                                    'score_id' => $score->id,
+                                    'id' => $message->messageId,
+                                    'message' => $text,
                                     'chat_id' => $chat->id,
-                                    'text' => $text,
-                                    'parse_mode' => 'HTML',
-                                    'disable_web_page_preview' => true
                                 ]);
-                                if ($message) {
-                                    $telegramMessage = Message::create([
-                                        'score_id' => $score->id,
-                                        'id' => $message->messageId,
-                                        'message' => $text,
-                                        'chat_id' => $chat->id,
-                                    ]);
-                                    if ($telegramMessage) {
-                                        GenerateScorePreview::dispatch($score->id);
-                                    }
+                                if ($telegramMessage) {
+                                    GenerateScorePreview::dispatch($score->id);
                                 }
-                            } catch (\Exception $ex) {
-                                Log::error('Ошибка отправки сообщения, текст: ' . $text . ' ' . $ex->getMessage());
-                                break;
                             }
                         }
                     }

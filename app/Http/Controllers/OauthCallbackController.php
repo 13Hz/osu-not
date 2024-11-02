@@ -5,12 +5,16 @@ namespace App\Http\Controllers;
 use App\Kernel\Api\OsuApi;
 use App\Kernel\DTO\OauthTokenDTO;
 use App\Models\OsuApiToken;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 
-class OauthCallbackController extends Controller
+class OauthCallbackController
 {
-    public function handle(Request $request): void
+    public function handle(Request $request): View|Factory|Application
     {
+        $success = false;
         if ($request->has('code')) {
             $api = new OsuApi();
             $result = $api->getToken(new OauthTokenDTO(
@@ -26,7 +30,10 @@ class OauthCallbackController extends Controller
                     'refresh_token' => $result->refresh_token,
                     'expires_in' => $result->expires_in,
                 ]);
+                $success = true;
             }
         }
+
+        return view('oauth')->with('isSuccess', $success);
     }
 }

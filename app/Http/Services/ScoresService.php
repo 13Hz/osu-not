@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Kernel\Builders\MessageBuilder;
 use App\Models\Score;
 use App\Models\User;
 use Carbon\Carbon;
@@ -39,5 +40,24 @@ class ScoresService
         }
 
         return null;
+    }
+
+    public function getScoreStringInfo(Score $score): string
+    {
+        $user = $score->user;
+        $messageBuilder = new MessageBuilder();
+        $pp = round($score->pp, 1);
+        $accuracy = round($score->accuracy * 100, 2);
+        $mods = null;
+        if (!empty($score->mods)) {
+            $mods = '+' . implode('', $score->mods);
+        }
+
+        return $messageBuilder
+            ->addText($score->rank)
+            ->addLink($user->name, "https://osu.ppy.sh/users/$user->id")
+            ->addLink("{$score->beatmapset['artist']} - {$score->beatmapset['title']} [{$score->beatmap['version']}]", $score->beatmap['url'])
+            ->addText("{$pp}pp $accuracy% {$score->beatmap['difficulty_rating']}★ $mods")
+            ->getText();
     }
 }

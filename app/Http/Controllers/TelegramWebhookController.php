@@ -7,7 +7,7 @@ use App\Kernel\Builders\KeyboardBuilder;
 use Telegram\Bot\Laravel\Facades\Telegram;
 use Illuminate\Http\Response;
 
-class TelegramWebhookController extends Controller
+class TelegramWebhookController
 {
     public function __construct(protected KeyboardBuilder $keyboardBuilder)
     {

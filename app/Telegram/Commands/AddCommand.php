@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Commands;
+namespace App\Telegram\Commands;
 
 use App\Http\Services\ChatsService;
 use App\Http\Services\OsuUsersService;

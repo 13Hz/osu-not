@@ -22,7 +22,7 @@ class Logger
 
     public static function increment(string $metric, array|string $tags = null): void
     {
-        self::getDogStatsdInstance()->increment($metric, tags: $tags, value: 10);
+        self::getDogStatsdInstance()->increment($metric, tags: $tags);
     }
 
     public static function set(string $metric, float $value, array|string $tags = null): void

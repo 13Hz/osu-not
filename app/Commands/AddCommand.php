@@ -5,6 +5,7 @@ namespace App\Commands;
 use App\Http\Services\ChatsService;
 use App\Http\Services\OsuUsersService;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use Telegram\Bot\Commands\Command;
 
 class AddCommand extends Command
@@ -42,6 +43,7 @@ class AddCommand extends Command
                     $this->replyWithMessage([
                         'text' => "Пользователь $name добавлен"
                     ]);
+                    Log::info('Пользователь {userName} добавлен в чат', ['userName' => $user->name]);
                 } else {
                     $this->replyWithMessage([
                         'text' => "Пользователь $name уже присутствует в этом чате"

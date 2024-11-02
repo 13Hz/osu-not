@@ -50,7 +50,7 @@ class CheckPlayerLastScoreJob implements ShouldQueue
                 }
                 $score = $scoresService->firstOrCreateFromResponse($lastScoreResponse);
                 if ($score && $score->id != $user->last_score_id && $score->mode == 'osu') {
-                    Log::info("player $user->name submitted new score");
+                    Log::info('Пользователь {userName} поставил новый результат', ['userName' => $user->name]);
                     if ($score->passed && $score->pp > 0) {
                         $messageBuilder = new MessageBuilder();
                         $pp = round($score->pp, 1);

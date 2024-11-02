@@ -188,9 +188,9 @@ class ScorePreviewBuilder
 
     public function getPreview(): ?File
     {
-        //        if ($this->score->preview) {
-        //            return $this->score->preview;
-        //        }
+        if ($this->score->preview) {
+            return $this->score->preview;
+        }
 
         $this->setAvatar();
         $this->addText();

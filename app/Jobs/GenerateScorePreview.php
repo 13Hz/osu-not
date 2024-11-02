@@ -42,7 +42,8 @@ class GenerateScorePreview implements ShouldQueue
                         'media' => json_encode(InputMediaPhoto::make([
                             'type' => 'photo',
                             'media' => $preview->url,
-                            'caption' => $message->message
+                            'caption' => $message->message,
+                            'parse_mode' => 'HTML'
                         ]))
                     ]);
                 }

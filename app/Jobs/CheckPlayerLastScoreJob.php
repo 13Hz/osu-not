@@ -5,7 +5,6 @@ namespace App\Jobs;
 use App\Http\Services\OsuUsersService;
 use App\Http\Services\ScoresService;
 use App\Kernel\Builders\MessageBuilder;
-use App\Kernel\Builders\ScorePreviewBuilder;
 use App\Kernel\DTO\GetUserScoresDTO;
 use App\Models\Message;
 use App\Models\User;
@@ -13,7 +12,6 @@ use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
-use Telegram\Bot\FileUpload\InputFile;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
 class CheckPlayerLastScoreJob implements ShouldQueue
@@ -67,30 +65,14 @@ class CheckPlayerLastScoreJob implements ShouldQueue
                             ->addLink("{$score->beatmapset['artist']} - {$score->beatmapset['title']} [{$score->beatmap['version']}]", $score->beatmap['url'])
                             ->addText("{$pp}pp $accuracy% {$score->beatmap['difficulty_rating']}★ $mods")
                             ->getText();
-                        if (config('api.generate_preview')) {
-                            $previewBuilder = new ScorePreviewBuilder($score);
-                            $preview = $previewBuilder->getPreview();
-                        }
                         foreach ($user->chats()->get() as $chat) {
-                            //TODO: Добавить обложку карты + инфу по показателям AR CS OD и тд + ссылку на профиль, карту, скор
                             try {
-                                if (!empty($preview)) {
-                                    $message = Telegram::sendPhoto([
-                                        'chat_id' => $chat->id,
-                                        'photo' => InputFile::create($preview->getAbsolutePath()),
-                                        'caption' => $text,
-                                        'parse_mode' => 'HTML',
-                                        'disable_web_page_preview' => true
-                                    ]);
-                                } else {
-                                    $message = Telegram::sendMessage([
-                                        'chat_id' => $chat->id,
-                                        'text' => $text,
-                                        'parse_mode' => 'HTML',
-                                        'disable_web_page_preview' => true
-                                    ]);
-                                }
-
+                                $message = Telegram::sendMessage([
+                                    'chat_id' => $chat->id,
+                                    'text' => $text,
+                                    'parse_mode' => 'HTML',
+                                    'disable_web_page_preview' => true
+                                ]);
                                 if ($message) {
                                     Message::create([
                                         'score_id' => $score->id,

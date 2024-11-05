@@ -23,8 +23,8 @@ class MessagesService
             }
         } catch (Exception $ex) {
             Log::error('Ошибка отправки сообщения', ['text' => $text, 'exception' => $ex->getMessage()]);
-        } finally {
-            return null;
         }
+
+        return null;
     }
 }

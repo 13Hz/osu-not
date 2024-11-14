@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\CheckPlayerLastScoreJob;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Bus\Batch;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Bus;
@@ -45,9 +46,13 @@ class CheckPlayersLastScoreCommand extends Command
 
         $batch = Bus::batch([])->name(self::BATCH_NAME);
 
-        User::all()->lazy()->pluck('id')->chunk(self::CHUNK_SIZE)->each(function (LazyCollection $collection) use ($batch) {
-            $batch->add(new CheckPlayerLastScoreJob($collection->toArray()));
-        });
+        User::query()
+            ->where('next_update_in', '<=', Carbon::now())->lazy()
+            ->pluck('id')
+            ->chunk(self::CHUNK_SIZE)
+            ->each(function (LazyCollection $collection) use ($batch) {
+                $batch->add(new CheckPlayerLastScoreJob($collection->toArray()));
+            });
 
         $batch->catch(function (Batch $batch, Throwable $throwable) {
             Log::warning('Ошибка выполнения задачи ' . $throwable->getMessage());

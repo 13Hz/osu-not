@@ -43,8 +43,8 @@ class CheckPlayerLastScoreJob implements ShouldQueue
         foreach ($users as $user) {
             $lastCheckAt = Carbon::parse($user->last_score_check_at);
             $daysInactive = $now->diffInDays($lastCheckAt);
-            $interval = $this->calculatePollingInterval($daysInactive);
-            if ($lastCheckAt->add($interval)->isFuture()) {
+            $minutes = $this->calculatePollingIntervalMinutes($daysInactive);
+            if ($lastCheckAt->addMinutes($minutes)->isFuture()) {
                 continue;
             }
 
@@ -83,17 +83,16 @@ class CheckPlayerLastScoreJob implements ShouldQueue
         }
     }
 
-    private function calculatePollingInterval(int $daysInactive)
+    private function calculatePollingIntervalMinutes(int $daysInactive): int
     {
-        $now = Carbon::now();
         if ($daysInactive <= 2) {
-            return $now->addSeconds(10);
+            return 0;
         } elseif ($daysInactive <= 7) {
-            return $now->addMinute();
+            return 1;
         } elseif ($daysInactive <= 30) {
-            return $now->addMinutes(5);
+            return 5;
         } else {
-            return $now->addHour();
+            return 60;
         }
     }
 }

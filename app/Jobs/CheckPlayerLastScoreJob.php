@@ -38,11 +38,10 @@ class CheckPlayerLastScoreJob implements ShouldQueue
             return;
         }
         $now = Carbon::now();
-
         $users = User::find($this->userIds);
         foreach ($users as $user) {
             $lastCheckAt = Carbon::parse($user->last_score_check_at);
-            $daysInactive = $now->diffInDays($lastCheckAt);
+            $daysInactive = $lastCheckAt->diffInDays($now);
             $minutes = $this->calculatePollingIntervalMinutes($daysInactive);
             if ($lastCheckAt->addMinutes($minutes)->isFuture()) {
                 continue;

@@ -37,16 +37,8 @@ class CheckPlayerLastScoreJob implements ShouldQueue
         if (empty($this->userIds)) {
             return;
         }
-        $now = Carbon::now();
         $users = User::find($this->userIds);
         foreach ($users as $user) {
-            $lastCheckAt = Carbon::parse($user->last_score_check_at);
-            $daysInactive = $lastCheckAt->diffInDays($now);
-            $minutes = $this->calculatePollingIntervalMinutes($daysInactive);
-            if ($lastCheckAt->addMinutes($minutes)->isFuture()) {
-                continue;
-            }
-
             $lastScoreResponse = $osuUsersService->getUserScores(new GetUserScoresDTO($user->id, 'recent', limit: 1))[0] ?? null;
             if ($lastScoreResponse) {
                 if ($lastScoreResponse['user']['username'] != $user->name) {
@@ -57,7 +49,6 @@ class CheckPlayerLastScoreJob implements ShouldQueue
                 }
                 $score = $scoresService->firstOrCreateFromResponse($lastScoreResponse);
                 if ($score && $score->id != $user->last_score_id && $score->mode == 'osu') {
-                    $user->update(['last_score_check_at' => $now]);
                     Log::info('Пользователь {userName} поставил новый результат', ['userName' => $user->name]);
                     if ($score->passed && $score->pp > 0) {
                         $text = $scoresService->getScoreStringInfo($score);
@@ -77,21 +68,10 @@ class CheckPlayerLastScoreJob implements ShouldQueue
                         }
                     }
                     $user->lastScore()->associate($score)->save();
+                    $user->update(['last_score_updated_at' => Carbon::now()]);
                 }
             }
-        }
-    }
-
-    private function calculatePollingIntervalMinutes(int $daysInactive): int
-    {
-        if ($daysInactive <= 2) {
-            return 0;
-        } elseif ($daysInactive <= 7) {
-            return 1;
-        } elseif ($daysInactive <= 30) {
-            return 5;
-        } else {
-            return 60;
+            $user->updateNextCheckDate();
         }
     }
 }

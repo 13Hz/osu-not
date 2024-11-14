@@ -41,13 +41,13 @@ class CheckPlayerLastScoreJob implements ShouldQueue
 
         $users = User::find($this->userIds);
         foreach ($users as $user) {
-            $daysInactive = $now->diffInDays($user->last_score_check_at);
+            $lastCheckAt = Carbon::parse($user->last_score_check_at);
+            $daysInactive = $now->diffInDays($lastCheckAt);
             $interval = $this->calculatePollingInterval($daysInactive);
-            if ($user->last_score_check_at->add($interval)->isFuture()) {
+            if ($lastCheckAt->add($interval)->isFuture()) {
                 continue;
             }
 
-            $user->update(['last_score_check_at' => $now]);
             $lastScoreResponse = $osuUsersService->getUserScores(new GetUserScoresDTO($user->id, 'recent', limit: 1))[0] ?? null;
             if ($lastScoreResponse) {
                 if ($lastScoreResponse['user']['username'] != $user->name) {
@@ -58,6 +58,7 @@ class CheckPlayerLastScoreJob implements ShouldQueue
                 }
                 $score = $scoresService->firstOrCreateFromResponse($lastScoreResponse);
                 if ($score && $score->id != $user->last_score_id && $score->mode == 'osu') {
+                    $user->update(['last_score_check_at' => $now]);
                     Log::info('Пользователь {userName} поставил новый результат', ['userName' => $user->name]);
                     if ($score->passed && $score->pp > 0) {
                         $text = $scoresService->getScoreStringInfo($score);

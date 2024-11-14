@@ -20,6 +20,9 @@ class User extends Model
         'last_score_check_at'
     ];
     protected $appends = [];
+    protected $casts = [
+        'last_score_check_at' => 'datetime'
+    ];
 
     public function chats(): BelongsToMany
     {

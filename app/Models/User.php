@@ -17,6 +17,7 @@ class User extends Model
         'name',
         'last_score_id',
         'avatar_url',
+        'last_score_check_at'
     ];
     protected $appends = [];
 

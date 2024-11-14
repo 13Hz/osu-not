@@ -8,6 +8,7 @@ use App\Http\Services\ScoresService;
 use App\Kernel\DTO\GetUserScoresDTO;
 use App\Models\Message;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -36,9 +37,17 @@ class CheckPlayerLastScoreJob implements ShouldQueue
         if (empty($this->userIds)) {
             return;
         }
+        $now = Carbon::now();
 
         $users = User::find($this->userIds);
         foreach ($users as $user) {
+            $daysInactive = $now->diffInDays($user->last_score_check_at);
+            $interval = $this->calculatePollingInterval($daysInactive);
+            if ($user->last_score_check_at->add($interval)->isFuture()) {
+                continue;
+            }
+
+            $user->update(['last_score_check_at' => $now]);
             $lastScoreResponse = $osuUsersService->getUserScores(new GetUserScoresDTO($user->id, 'recent', limit: 1))[0] ?? null;
             if ($lastScoreResponse) {
                 if ($lastScoreResponse['user']['username'] != $user->name) {
@@ -70,6 +79,20 @@ class CheckPlayerLastScoreJob implements ShouldQueue
                     $user->lastScore()->associate($score)->save();
                 }
             }
+        }
+    }
+
+    private function calculatePollingInterval(int $daysInactive)
+    {
+        $now = Carbon::now();
+        if ($daysInactive <= 2) {
+            return $now->addSeconds(10);
+        } elseif ($daysInactive <= 7) {
+            return $now->addMinute();
+        } elseif ($daysInactive <= 30) {
+            return $now->addMinutes(5);
+        } else {
+            return $now->addHour();
         }
     }
 }

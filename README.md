@@ -1,4 +1,8 @@
-![image](https://github.com/user-attachments/assets/712b4cdb-ae0e-44c7-a922-e9892d570620)
+# ![image](https://github.com/user-attachments/assets/712b4cdb-ae0e-44c7-a922-e9892d570620)
+[![GitHub issues](https://img.shields.io/github/issues-raw/13Hz/osu-not)](https://github.com/13Hz/osu-not/issues)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/13Hz/osu-not)](https://github.com/13Hz/osu-not/commits/main)
+[![GitHub](https://img.shields.io/github/license/13Hz/osu-not)](https://github.com/13Hz/osu-not/blob/main/LICENSE)
+[![Telegram](https://img.shields.io/static/v1?label=telegram&message=@osu_not_bot&color=279fda)](https://t.me/osu_not_bot)
 
 
 # osu!not

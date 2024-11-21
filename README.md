@@ -45,7 +45,8 @@ php artisan api:oauth
 4. Запустить обработчик планировщика заданий и очередей
 ```
 php artisan schedule:work
-php artisan queue:work
+php artisan queue:work --queue=generate_preview  
+php artisan queue:work --queue=check_last_scores
 php artisan short-schedule:run
 ```
 5. После установки можно перейти в чат с ботом или добавить его в любой чат/канал и работать с ним, доступные команды и их описание будет ниже

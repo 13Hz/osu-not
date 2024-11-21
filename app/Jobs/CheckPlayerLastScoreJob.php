@@ -63,7 +63,7 @@ class CheckPlayerLastScoreJob implements ShouldQueue
                                     'chat_id' => $chat->id,
                                 ]);
                                 if ($telegramMessage) {
-                                    GenerateScorePreview::dispatch($score->id);
+                                    GenerateScorePreview::dispatch($score->id)->onQueue('generate_preview');
                                 }
                             }
                         }

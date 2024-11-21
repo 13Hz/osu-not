@@ -56,7 +56,7 @@ class CheckPlayersLastScoreCommand extends Command
 
         $batch->catch(function (Batch $batch, Throwable $throwable) {
             Log::warning('Ошибка выполнения задачи ' . $throwable->getMessage());
-        })->dispatch();
+        })->onQueue('check_last_scores')->dispatch();
 
         return self::SUCCESS;
     }

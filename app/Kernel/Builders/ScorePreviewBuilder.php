@@ -160,8 +160,10 @@ class ScorePreviewBuilder
         $ppString = round($this->score->pp, 2) . 'pp';
         $this->setCenterText($ppString, $this->background, 270, 36, $this->whiteColor, 18);
 
-        $scoreString = number_format($this->score->score, 0, '', ' ');
-        $this->setCenterText($scoreString, $this->background, 270, 15, $this->whiteColor, 10);
+        if ($this->score->score > 0) {
+            $scoreString = number_format($this->score->score, 0, '', ' ');
+            $this->setCenterText($scoreString, $this->background, 270, 15, $this->whiteColor, 10);
+        }
 
         $accuracyString = round($this->score->accuracy * 100, 2) . '%';
         $this->setCenterText($accuracyString, $this->background, 275, 70, $this->whiteColor, 10);

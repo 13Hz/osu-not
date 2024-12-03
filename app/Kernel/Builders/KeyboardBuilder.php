@@ -8,29 +8,29 @@ use Telegram\Bot\Keyboard\Keyboard;
 
 class KeyboardBuilder
 {
-    private Keyboard $keyboard;
+    protected Keyboard $keyboard;
 
     public function __construct()
     {
         $this->keyboard = Keyboard::make()->inline();
     }
 
-    private function addRow(array $buttons): self
+    protected function addRow(array $buttons): self
     {
         $this->keyboard->row($buttons);
 
         return $this;
     }
 
-    private function addBackButton(string $to): self
+    protected function addBackButton(string $to, array $data = []): self
     {
         return $this->addRow([
             Keyboard::inlineButton([
                 'text' => 'Назад',
-                'callback_data' => json_encode([
+                'callback_data' => json_encode(array_merge([
                     'action' => 'back',
                     'to' => $to,
-                ]),
+                ], $data)),
             ])
         ]);
     }
@@ -61,6 +61,19 @@ class KeyboardBuilder
         ]);
     }
 
+    private function addPlayerFilterButton(int $playerId): self
+    {
+        return $this->addRow([
+            Keyboard::inlineButton([
+                'text' => 'Фильтр',
+                'callback_data' => json_encode([
+                    'action' => 'player_filter',
+                    'id' => $playerId,
+                ]),
+            ])
+        ]);
+    }
+
     public function buildPlayersMenu(int $chatId): ?Keyboard
     {
         $chat = Chat::find($chatId);
@@ -77,7 +90,8 @@ class KeyboardBuilder
 
     public function buildPlayerActionsMenu(int $playerId): Keyboard
     {
-        $this->addDeletePlayerButton($playerId)
+        $this->addPlayerFilterButton($playerId)
+            ->addDeletePlayerButton($playerId)
             ->addBackButton('list_players');
 
         return $this->keyboard;

@@ -6,6 +6,7 @@ use App\Http\Services\MessagesService;
 use App\Http\Services\OsuUsersService;
 use App\Http\Services\ScoresService;
 use App\Kernel\DTO\GetUserScoresDTO;
+use App\Models\ChatUser;
 use App\Models\Message;
 use App\Models\User;
 use Carbon\Carbon;
@@ -54,16 +55,28 @@ class CheckPlayerLastScoreJob implements ShouldQueue
                     if ($score->passed && $score->pp > 0) {
                         $text = $scoresService->getScoreStringInfo($score);
                         foreach ($user->chats()->get() as $chat) {
-                            $message = $messagesService->sendMessage($chat->id, $text);
-                            if ($message) {
-                                $telegramMessage = Message::create([
-                                    'score_id' => $score->id,
-                                    'id' => $message->messageId,
-                                    'message' => $text,
-                                    'chat_id' => $chat->id,
-                                ]);
-                                if ($telegramMessage) {
-                                    GenerateScorePreview::dispatch($score->id)->onQueue('generate_preview');
+                            $filters = ChatUser::find($chat->pivot->id)?->filters()->get() ?? [];
+                            $sendMessage = true;
+                            foreach ($filters as $filter) {
+                                $sendMessage = $filter->apply($score);
+                                if (!$sendMessage) {
+                                    Log::info('В чате {chatId} сработал фильтр "{filterName}", пропускаем', ['chatId' => $chat->id, 'filterName' => $filter->title]);
+                                    break;
+                                }
+                            }
+
+                            if ($sendMessage) {
+                                $message = $messagesService->sendMessage($chat->id, $text);
+                                if ($message) {
+                                    $telegramMessage = Message::create([
+                                        'score_id' => $score->id,
+                                        'id' => $message->messageId,
+                                        'message' => $text,
+                                        'chat_id' => $chat->id,
+                                    ]);
+                                    if ($telegramMessage) {
+                                        GenerateScorePreview::dispatch($score->id)->onQueue('generate_preview');
+                                    }
                                 }
                             }
                         }

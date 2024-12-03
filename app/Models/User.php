@@ -28,7 +28,7 @@ class User extends Model
 
     public function chats(): BelongsToMany
     {
-        return $this->belongsToMany(Chat::class);
+        return $this->belongsToMany(Chat::class)->withPivot('id');
     }
 
     public function lastScore(): BelongsTo

@@ -34,6 +34,8 @@ class ScoresService
                     'statistics' => $scoreResponse['statistics'],
                     'beatmap' => $scoreResponse['beatmap'],
                     'beatmapset' => $scoreResponse['beatmapset'],
+                    'beatmapset_id' => $scoreResponse['beatmap']['beatmapset_id'],
+                    'beatmap_id' => $scoreResponse['beatmap']['id'],
                     'created_at' => Carbon::create($scoreResponse['created_at'])
                 ]
             );

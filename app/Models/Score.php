@@ -35,6 +35,8 @@ class Score extends Model
         'user',
         'beatmap',
         'beatmapset',
+        'beatmapset_id',
+        'beatmap_id'
     ];
 
     public function user(): BelongsTo

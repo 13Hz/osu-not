@@ -4,7 +4,9 @@ namespace App\Kernel\Builders;
 
 use App\Models\File;
 use App\Models\Score;
+use Exception;
 use GdImage;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -40,8 +42,14 @@ class ScorePreviewBuilder
 
     private function prepareStaticImages(): void
     {
-        $cover = $this->resize(imagecreatefromjpeg($this->score->beatmapset['covers']['cover']), 750, 209);
         $background = imagecreatefrompng(resource_path('/images/gd/bg.png'));
+
+        try {
+            $cover = $this->resize(imagecreatefromjpeg($this->score->beatmapset['covers']['cover']), 750, 209);
+        } catch (Exception) {
+            $cover = $background;
+            Log::warning('Ошибка получения обложки карты');
+        }
 
         $temp = imagecreatetruecolor(750, 250);
         imagealphablending($temp, false);
@@ -56,20 +64,24 @@ class ScorePreviewBuilder
 
         $this->background = $temp;
         if (!empty($this->score->user->avatar_url)) {
-            $info = pathinfo($this->score->user->avatar_url);
-            $image = null;
-            switch ($info['extension']) {
-                case 'png':
-                    $image = imagecreatefrompng($this->score->user->avatar_url);
-                    break;
-                case 'jpeg':
-                case 'jpg':
-                    $image = imagecreatefromjpeg($this->score->user->avatar_url);
-                    break;
-            }
-            if ($image) {
-                $this->avatar = $this->resize($image, 60, 60);
-                imagedestroy($image);
+            try {
+                $info = pathinfo($this->score->user->avatar_url);
+                $image = null;
+                switch ($info['extension']) {
+                    case 'png':
+                        $image = imagecreatefrompng($this->score->user->avatar_url);
+                        break;
+                    case 'jpeg':
+                    case 'jpg':
+                        $image = imagecreatefromjpeg($this->score->user->avatar_url);
+                        break;
+                }
+                if ($image) {
+                    $this->avatar = $this->resize($image, 60, 60);
+                    imagedestroy($image);
+                }
+            } catch (Exception) {
+                Log::warning('Ошибка получения аватара пользователя');
             }
         }
 

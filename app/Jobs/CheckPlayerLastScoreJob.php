@@ -53,7 +53,7 @@ class CheckPlayerLastScoreJob implements ShouldQueue
                 $score = $scoresService->firstOrCreateFromResponse($lastScoreResponse);
                 if ($score && $score->mode == 'osu') {
                     Log::info('Пользователь {userName} поставил новый результат', ['userName' => $user->name]);
-                    if ($score->passed && $score->pp > 0) {
+                    if ($score && $score->id != $user->last_score_id && $score->mode == 'osu') {
                         $text = $scoresService->getScoreStringInfo($score);
                         if ($user->is_vip) {
                             $mapScores = $osuUsersService->getUserBeatmapScores(new GetUserBeatmapScoreDTO($score['beatmap_id'], $user->id));

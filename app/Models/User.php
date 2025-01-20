@@ -15,6 +15,7 @@ class User extends Model
     protected $fillable = [
         'id',
         'name',
+        'is_vip',
         'last_score_id',
         'avatar_url',
         'last_score_updated_at',
@@ -22,6 +23,7 @@ class User extends Model
     ];
     protected $appends = [];
     protected $casts = [
+        'is_vip' => 'bool',
         'last_score_updated_at' => 'datetime',
         'next_update_in' => 'datetime'
     ];

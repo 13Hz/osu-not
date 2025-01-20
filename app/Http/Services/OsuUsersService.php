@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Kernel\Api\OsuApi;
+use App\Kernel\DTO\GetUserBeatmapScoreDTO;
 use App\Kernel\DTO\GetUserDTO;
 use App\Kernel\DTO\GetUserScoresDTO;
 use App\Kernel\Responses\User;
@@ -34,6 +35,16 @@ class OsuUsersService
         $token = $this->tokenService->getToken();
         if ($token) {
             return $this->api->getUserScores($getUserScoresDTO, $token);
+        }
+
+        return null;
+    }
+
+    public function getUserBeatmapScores(GetUserBeatmapScoreDTO $getUserBeatmapScoreDTO): ?array
+    {
+        $token = $this->tokenService->getToken();
+        if ($token) {
+            return $this->api->getUserBeatmapScore($getUserBeatmapScoreDTO, $token);
         }
 
         return null;

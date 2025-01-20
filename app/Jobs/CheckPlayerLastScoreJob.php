@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Http\Services\MessagesService;
 use App\Http\Services\OsuUsersService;
 use App\Http\Services\ScoresService;
+use App\Kernel\DTO\GetUserBeatmapScoreDTO;
 use App\Kernel\DTO\GetUserScoresDTO;
 use App\Models\ChatUser;
 use App\Models\Message;
@@ -50,10 +51,16 @@ class CheckPlayerLastScoreJob implements ShouldQueue
                     $user->update(['avatar_url' => $lastScoreResponse['user']['avatar_url']]);
                 }
                 $score = $scoresService->firstOrCreateFromResponse($lastScoreResponse);
-                if ($score && $score->id != $user->last_score_id && $score->mode == 'osu') {
+                if ($score && $score->mode == 'osu') {
                     Log::info('Пользователь {userName} поставил новый результат', ['userName' => $user->name]);
                     if ($score->passed && $score->pp > 0) {
                         $text = $scoresService->getScoreStringInfo($score);
+                        if ($user->is_vip) {
+                            $mapScores = $osuUsersService->getUserBeatmapScores(new GetUserBeatmapScoreDTO($score['beatmap_id'], $user->id));
+                            if (!empty($mapScores['position']) && $mapScores['score']['id'] == $score['id']) {
+                                $text = "#{$mapScores['position']} | $text";
+                            }
+                        }
                         foreach ($user->chats()->get() as $chat) {
                             $filters = ChatUser::find($chat->pivot->id)?->filters()->get() ?? [];
                             $sendMessage = true;

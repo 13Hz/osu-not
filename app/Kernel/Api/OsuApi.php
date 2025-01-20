@@ -2,6 +2,7 @@
 
 namespace App\Kernel\Api;
 
+use App\Kernel\DTO\GetUserBeatmapScoreDTO;
 use App\Kernel\DTO\GetUserDTO;
 use App\Kernel\DTO\GetUserScoresDTO;
 use App\Kernel\DTO\OauthTokenDTO;
@@ -113,6 +114,19 @@ class OsuApi
         $response = $this->get(
             path: "/users/$getUserScoresDTO->user/scores/$getUserScoresDTO->type",
             data: $getUserScoresDTO,
+            headers: ['Authorization' => 'Bearer ' . $token]
+        );
+        if ($response) {
+            return json_decode($response->getBody()->getContents(), true);
+        }
+
+        return null;
+    }
+
+    public function getUserBeatmapScore(GetUserBeatmapScoreDTO $getUserBeatmapScoreDTO, string $token): ?array
+    {
+        $response = $this->get(
+            path: "/beatmaps/$getUserBeatmapScoreDTO->beatmapId/scores/users/$getUserBeatmapScoreDTO->userId",
             headers: ['Authorization' => 'Bearer ' . $token]
         );
         if ($response) {

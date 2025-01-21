@@ -33,9 +33,8 @@ class AddCommand extends Command
         }
 
         $name = $this->argument('username');
-        $chatId = $this->getUpdate()->getChat()->get('id') ?? null;
-        if ($name && $chatId) {
-            $chat = $this->chatsService->getOrCreateChat($chatId);
+        if ($name) {
+            $chat = $this->chatsService->getOrCreateChat($this->getUpdate()->getChat());
             $user = $this->osuUsersService->getOrCreateUser($name);
             if ($chat && $user) {
                 if (!$chat->users->contains($user)) {

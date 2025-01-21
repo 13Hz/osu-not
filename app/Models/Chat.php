@@ -14,6 +14,7 @@ class Chat extends Model
 
     protected $fillable = [
         'id',
+        'name'
     ];
 
     public function users(): BelongsToMany

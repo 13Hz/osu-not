@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Models\Chat;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Telegram\Bot\Laravel\Facades\Telegram;
@@ -9,6 +10,8 @@ use Telegram\Bot\Objects\Message;
 
 class MessagesService
 {
+    private const FORBIDDEN_STATUS = 403;
+
     public function sendMessage(int $chatId, string $text, string $parseMode = 'HTML', bool $disablePagePreview = true): ?Message
     {
         try {
@@ -22,7 +25,11 @@ class MessagesService
                 return $message;
             }
         } catch (Exception $ex) {
-            Log::error('Ошибка отправки сообщения', ['text' => $text, 'exception' => $ex->getMessage()]);
+            if ($ex->getCode() == self::FORBIDDEN_STATUS && Chat::find($chatId)?->delete()) {
+                Log::warning('Удален заблокированный чат', ['chatId' => $chatId]);
+            } else {
+                Log::error('Ошибка отправки сообщения', ['text' => $text, 'exception' => $ex->getMessage()]);
+            }
         }
 
         return null;

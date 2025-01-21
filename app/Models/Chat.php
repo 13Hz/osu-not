@@ -20,4 +20,17 @@ class Chat extends Model
     {
         return $this->belongsToMany(User::class)->withPivot('id');
     }
+
+    protected static function booted(): void
+    {
+        static::deleting(function ($chat) {
+            $chat->users()->detach();
+
+            $usersToDelete = User::query()->doesntHave('chats')->get();
+
+            foreach ($usersToDelete as $user) {
+                $user->delete();
+            }
+        });
+    }
 }

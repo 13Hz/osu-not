@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Models\Chat;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Telegram\Bot\Laravel\Facades\Telegram;
@@ -22,7 +23,11 @@ class MessagesService
                 return $message;
             }
         } catch (Exception $ex) {
-            Log::error('Ошибка отправки сообщения', ['text' => $text, 'exception' => $ex->getMessage()]);
+            if ($ex->getCode() == 403 && Chat::find($chatId)?->delete()) {
+                Log::warning('Удален заблокированный чат', ['chatId' => $chatId]);
+            } else {
+                Log::error('Ошибка отправки сообщения', ['text' => $text, 'exception' => $ex->getMessage()]);
+            }
         }
 
         return null;

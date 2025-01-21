@@ -17,13 +17,10 @@ class StartCommand extends Command
 
     public function handle()
     {
-        $chatId = $this->getUpdate()->getChat()->get('id') ?? null;
-        if ($chatId) {
-            if ($this->chatsService->getOrCreateChat($chatId)) {
-                return $this->replyWithMessage([
-                    'text' => 'Чат успешно добавлен!',
-                ]);
-            }
+        if ($this->chatsService->getOrCreateChat($this->getUpdate()->getChat())) {
+            return $this->replyWithMessage([
+                'text' => 'Чат успешно добавлен!',
+            ]);
         }
 
         return $this->replyWithMessage([
